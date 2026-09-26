@@ -1,0 +1,19 @@
+{
+  "name": "@yotek/notifier",
+  "version": "1.1.0",
+  "description": "Zero-dependency Node.js client for Central Notification Gateway",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "node examples/test_node_alert.js"
+  },
+  "keywords": [
+    "notifications",
+    "alerts",
+    "gateway",
+    "websocket",
+    "toast"
+  ],
+  "author": "Yotek",
+  "license": "MIT"
+}

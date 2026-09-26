@@ -136,15 +136,15 @@ curl -X POST "http://localhost:8000/api/v1/notify" \
 
 ## 📦 Using the Python Producer SDK in your Apps
 
-Drop `sdk/python/notifier_sdk.py` into any of your projects:
+Drop `sdk/python/notifier_sdk.py` into any of your Python projects:
 
 ```python
 from notifier_sdk import Notifier
 
 # Initialize with your gateway URL & API key
 notify = Notifier(
-    endpoint="https://notify.yourdomain.com",
-    api_key="your-secret-api-key",
+    endpoint="https://notify.yotek.net",
+    api_key="your-production-api-key",
     default_source="my-trading-app"
 )
 
@@ -158,6 +158,38 @@ notify.send(
 # Convenience shortcuts
 notify.trade_alert("Target Hit", "SL moved to breakeven", priority="high")
 notify.server_alert("Database Backup Failed", "Disk write error", priority="critical")
+```
+
+---
+
+## 🟢 Using the Node.js Producer SDK in your Apps
+
+The Node.js SDK has **zero external dependencies** and works out of the box with Node 16, 18, 20, and 22+.
+
+Copy `sdk/node/index.js` (or the `sdk/node` directory) into your Node.js application:
+
+```javascript
+const { Notifier } = require('./sdk/node');
+// Or: import { Notifier } from './sdk/node';
+
+const notify = new Notifier({
+  endpoint: 'https://notify.yotek.net',
+  apiKey: 'your-production-api-key',
+  defaultSource: 'express-order-service'
+});
+
+// 1. General notification:
+await notify.send({
+  title: 'Order Filled',
+  message: 'NIFTY 25000 CE filled 100 qty @ 142.50',
+  priority: 'high',
+  data: { orderId: 'ORD-9842', pnl: '+4200' }
+});
+
+// 2. Convenience shortcuts:
+await notify.tradeAlert('Target Reached', 'BankNifty target 1 achieved', 'high');
+await notify.serverAlert('High Memory Warning', 'Heap usage exceeded 85%', 'critical');
+await notify.info('Nightly Batch', 'Sync completed successfully');
 ```
 
 ---
