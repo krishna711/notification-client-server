@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Gateway Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #090d16;
+            --surface: #131b2e;
+            --surface-card: #18233c;
+            --border: #263554;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.25);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .logo-title h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .logo-title p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 10px currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-glow);
+        }
+
+        button.btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        button.btn-primary:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        /* Device cards */
+        .device-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .device-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface-card);
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .device-info h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .device-info p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        .badge-online {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .badge-offline {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        /* Notification Feed */
+        .notif-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 520px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .notif-item {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 14px;
+            transition: transform 0.15s;
+        }
+
+        .notif-item.priority-critical { border-left-color: var(--danger); }
+        .notif-item.priority-high { border-left-color: var(--warning); }
+        .notif-item.priority-normal { border-left-color: var(--primary); }
+
+        .notif-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .notif-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .notif-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        .notif-body {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
+
+        .notif-footer {
+            display: flex;
+            gap: 8px;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+        }
+
+        .tag {
+            padding: 2px 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            color: var(--text-muted);
+        }
+
+        .quick-api-code {
+            background: #0d121f;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            overflow-x: auto;
+            color: #38bdf8;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-group">
+                <div class="logo-icon">🔔</div>
+                <div class="logo-title">
+                    <h1>Notification Gateway</h1>
+                    <p>Real-Time Event Dispatcher & Client Manager</p>
+                </div>
+            </div>
+            <div class="status-badge" id="serverStatusBadge">
+                <span class="pulse-dot"></span>
+                <span id="gatewayStatusText">Gateway Active</span>
+            </div>
+        </header>
+
+        <div class="grid">
+            <!-- Left Column: Live Feed & API Guide -->
+            <div>
+                <div class="card">
+                    <div class="card-title">
+                        <span>Live Notification Stream</span>
+                        <span style="font-size:0.8rem; color:var(--text-muted)" id="feedCount">Loaded</span>
+                    </div>
+                    <div class="notif-feed" id="notifFeed">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Producer App Integration (App1, App2, App3)</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
+                        Any application on any server can send notifications with a simple HTTPS POST:
+                    </p>
+                    <pre class="quick-api-code">curl -X POST "http://localhost:8000/api/v1/notify" \
+  -H "Authorization: Bearer dev-secret-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": "app1-trading",
+    "title": "Order Executed",
+    "message": "NIFTY 25000 CE filled @ 142.50",
+    "priority": "high",
+    "target_device": "all"
+  }'</pre>
+                </div>
+            </div>
+
+            <!-- Right Column: Connected Devices & Test Trigger -->
+            <div>
+                <div class="card">
+                    <div class="card-title">Connected Devices</div>
+                    <div class="device-list" id="deviceList">
+                        <div style="font-size:0.85rem; color:var(--text-muted)">Waiting for client connections...</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Fire Test Notification</div>
+                    <form id="testForm">
+                        <div class="form-group">
+                            <label>Source App</label>
+                            <input type="text" id="testSource" value="trading-bot" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" id="testTitle" value="Target Reached" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea id="testMessage" rows="2" required>BANKNIFTY 55000 CE Target 1 reached (+45 pts)</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Priority</label>
+                            <select id="testPriority">
+                                <option value="normal">Normal</option>
+                                <option value="high" selected>High (Important)</option>
+                                <option value="critical">Critical (Immediate Audio Alert)</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Target Device</label>
+                            <input type="text" id="testTarget" value="all" placeholder="all or device_id">
+                        </div>
+                        <button type="submit" class="btn-primary">Dispatch Alert</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = "dev-secret-api-key";
+        const notifFeed = document.getElementById("notifFeed");
+        const deviceList = document.getElementById("deviceList");
+
+        // Load Initial Data
+        async function loadNotifications() {
+            try {
+                const res = await fetch("/api/v1/notifications?limit=20", {
+                    headers: { "Authorization": `Bearer ${API_KEY}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    renderNotifications(data);
+                }
+            } catch (err) {
+                console.error("Failed to load notifications", err);
+            }
+        }
+
+        async function loadDevices() {
+            try {
+                const res = await fetch("/api/v1/devices", {
+                    headers: { "Authorization": `Bearer ${API_KEY}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    renderDevices(data);
+                }
+            } catch (err) {
+                console.error("Failed to load devices", err);
+            }
+        }
+
+        function renderNotifications(items) {
+            notifFeed.innerHTML = "";
+            if (!items.length) {
+                notifFeed.innerHTML = "<div style='color:var(--text-muted); font-size:0.85rem;'>No notifications recorded yet.</div>";
+                return;
+            }
+            items.forEach(appendNotification);
+        }
+
+        function appendNotification(item) {
+            const el = document.createElement("div");
+            el.className = `notif-item priority-${item.priority || 'normal'}`;
+            el.innerHTML = `
+                <div class="notif-header">
+                    <span class="notif-title">${escapeHtml(item.title)}</span>
+                    <span class="notif-meta">${new Date(item.created_at).toLocaleTimeString()}</span>
+                </div>
+                <div class="notif-body">${escapeHtml(item.message)}</div>
+                <div class="notif-footer">
+                    <span class="tag">Src: ${escapeHtml(item.source)}</span>
+                    <span class="tag">Priority: ${escapeHtml(item.priority)}</span>
+                    <span class="tag">Target: ${escapeHtml(item.target_device || 'all')}</span>
+                    <span class="tag" style="color:${item.status === 'acknowledged' ? 'var(--success)' : '#60a5fa'}">Status: ${item.status}</span>
+                </div>
+            `;
+            if (notifFeed.firstChild) {
+                notifFeed.insertBefore(el, notifFeed.firstChild);
+            } else {
+                notifFeed.appendChild(el);
+            }
+        }
+
+        function renderDevices(devices) {
+            deviceList.innerHTML = "";
+            if (!devices.length) {
+                deviceList.innerHTML = "<div style='color:var(--text-muted); font-size:0.85rem;'>No devices registered yet.</div>";
+                return;
+            }
+            devices.forEach(d => {
+                const el = document.createElement("div");
+                el.className = "device-item";
+                el.innerHTML = `
+                    <div class="device-info">
+                        <h4>${escapeHtml(d.device_name)}</h4>
+                        <p>${escapeHtml(d.device_id)} • ${escapeHtml(d.ip_address || 'local')}</p>
+                    </div>
+                    <span class="${d.is_online ? 'badge-online' : 'badge-offline'}">
+                        ${d.is_online ? 'ONLINE' : 'OFFLINE'}
+                    </span>
+                `;
+                deviceList.appendChild(el);
+            });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str).replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[m]);
+        }
+
+        // Live WebSocket Dashboard Connection
+        function connectLiveDashboard() {
+            const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+            const wsUrl = `${protocol}//${window.location.host}/ws/dashboard`;
+            const ws = new WebSocket(wsUrl);
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === "new_notification") {
+                        appendNotification(data.notification);
+                    } else if (data.type === "device_status") {
+                        loadDevices();
+                    }
+                } catch(e) {}
+            };
+
+            ws.onclose = () => {
+                setTimeout(connectLiveDashboard, 3000);
+            };
+        }
+
+        // Form Submit
+        document.getElementById("testForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const payload = {
+                source: document.getElementById("testSource").value,
+                title: document.getElementById("testTitle").value,
+                message: document.getElementById("testMessage").value,
+                priority: document.getElementById("testPriority").value,
+                target_device: document.getElementById("testTarget").value
+            };
+
+            const btn = e.target.querySelector("button");
+            btn.disabled = true;
+            btn.innerText = "Dispatching...";
+
+            try {
+                const res = await fetch("/api/v1/notify", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${API_KEY}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    btn.innerText = "Sent!";
+                    setTimeout(() => { btn.innerText = "Dispatch Alert"; btn.disabled = false; }, 1000);
+                } else {
+                    alert("Error dispatching notification");
+                    btn.innerText = "Dispatch Alert";
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                alert("Network error: " + err.message);
+                btn.innerText = "Dispatch Alert";
+                btn.disabled = false;
+            }
+        });
+
+        loadNotifications();
+        loadDevices();
+        connectLiveDashboard();
+    </script>
+</body>
+</html>

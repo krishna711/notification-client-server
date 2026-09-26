@@ -1,0 +1,21 @@
+[Unit]
+Description=Central Notification Gateway (FastAPI + WebSocket)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/notification-client-server/server
+Environment="PATH=/opt/notification-client-server/venv/bin"
+Environment="PORT=8000"
+Environment="HOST=0.0.0.0"
+Environment="DATABASE_PATH=/opt/notification-client-server/notifications.db"
+Environment="NOTIFICATION_API_KEYS=your-secret-api-key"
+Environment="DEVICE_AUTH_TOKEN=your-device-secret-token"
+
+ExecStart=/opt/notification-client-server/venv/bin/python run_server.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,33 @@
+# ==============================================================================
+# Cloudflare Tunnel Configuration (cloudflared)
+# ==============================================================================
+# 1. Install cloudflared on your Linux server (or Windows):
+#    curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+#    sudo dpkg -i cloudflared.deb
+#
+# 2. Login to your Cloudflare account:
+#    cloudflared tunnel login
+#
+# 3. Create the tunnel:
+#    cloudflared tunnel create notification-gateway
+#    (Note down the Tunnel ID generated)
+#
+# 4. Route your custom domain/subdomain to the tunnel:
+#    cloudflared tunnel route dns notification-gateway notify.yourdomain.com
+#
+# 5. Save this config file as ~/.cloudflared/config.yml (replace TUNNEL_ID and path):
+
+tunnel: YOUR_TUNNEL_UUID_HERE
+credentials-file: /root/.cloudflared/YOUR_TUNNEL_UUID_HERE.json
+
+ingress:
+  # Route all incoming requests on notify.yourdomain.com to local FastAPI port 8000
+  - hostname: notify.yourdomain.com
+    service: http://localhost:8000
+    originRequest:
+      noTLSVerify: false
+      connectTimeout: 30s
+      # WebSockets are natively supported over HTTP/HTTPS by Cloudflare Edge
+
+  # Catch-all rule (required by Cloudflare Tunnel)
+  - service: http_status:404

@@ -1,0 +1,9 @@
+{
+  "server_url": "http://localhost:8000",
+  "device_id": "laptop-asus-laptop",
+  "device_name": "LAPTOP-ASUS (Windows)",
+  "device_token": "dev-device-secret-token",
+  "notification_style": "center",
+  "enable_sound": true,
+  "duration_seconds": 7
+}
